@@ -1,0 +1,53 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+class CourseFullException extends Exception {
+    public CourseFullException(String message) {
+        super(message);
+    }
+}
+
+class PrerequisiteNotMetException extends Exception {
+    public PrerequisiteNotMetException(String message) {
+        super(message);
+    }
+}
+
+public class UniversityEnrollmentSystem {
+    private static final int MAX_CAPACITY = 2;
+    private static Map<String, Integer> courseEnrollment = new HashMap<>();
+    private static Map<String, String> prerequisites = new HashMap<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        prerequisites.put("Advanced Java", "Core Java");
+        courseEnrollment.put("Advanced Java", 1);
+        
+        try {
+            System.out.print("Enroll in Course: ");
+            String course = scanner.nextLine();
+            
+            if (prerequisites.containsKey(course)) {
+                System.out.print("Prerequisite: ");
+                String completedCourse = scanner.nextLine();
+                
+                if (!completedCourse.equals(prerequisites.get(course))) {
+                    throw new PrerequisiteNotMetException("Error: PrerequisiteNotMetException - Complete " + prerequisites.get(course) + " before enrolling in " + course + ".");
+                }
+            }
+            
+            if (courseEnrollment.getOrDefault(course, 0) >= MAX_CAPACITY) {
+                throw new CourseFullException("Error: CourseFullException - " + course + " is full.");
+            }
+            
+            courseEnrollment.put(course, courseEnrollment.getOrDefault(course, 0) + 1);
+            System.out.println("Enrollment successful in " + course + "!");
+        } catch (PrerequisiteNotMetException | CourseFullException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            scanner.close();
+        }
+    }
+}
